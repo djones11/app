@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>    
+    <meta http-equiv="Expires" content="0" />
+    
+    <link rel="stylesheet" href="<%= BASE_URL %>assets/css/icons.css">
+    <link rel="stylesheet" href="<%= BASE_URL %>assets/css/opensans.css">
+
+    <style id="custom_css">.red{color: "red";}</style>
+    <title>My app</title>
+  </head>
+  <body style="background-color: #44515b;" id="body">
+    <noscript>
+      <strong>We're sorry but test doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>   
+    <script>
+
+    // Add days to a date
+
+      Date.prototype.addDays = function(days) {
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+      }
+
+      // Adds leading 0's to less than 10 numbers
+      
+      Number.prototype.padLeft = function(base, chr) {
+        var len = String(base || 10).length - String(this).length + 1;
+        return len > 0 ? new Array(len).join(chr || "0") + this : this;
+      };
+      
+    // Object.assign polyfill
+
+      if (typeof Object.assign != 'function') {
+        Object.assign = function(target) {
+          'use strict';
+          if (target == null) {
+            throw new TypeError('Cannot convert undefined or null to object');
+          }
+
+          target = Object(target);
+          for (var index = 1; index < arguments.length; index++) {
+            var source = arguments[index];
+            if (source != null) {
+              for (var key in source) {
+                if (Object.prototype.hasOwnProperty.call(source, key)) {
+                  target[key] = source[key];
+                }
+              }
+            }
+          }
+          return target;
+        };
+      }
+
+    // Polyfill for .includes()
+
+      if (!String.prototype.includes) {
+        String.prototype.includes = function(search, start) {
+          'use strict';
+          
+          if (typeof start !== 'number') {
+            start = 0;
+          }
+
+          if (start + search.length > this.length) {
+            return false;
+          } else {
+            return this.indexOf(search, start) !== -1;
+          }
+        };
+      }  
+
+      if (!String.prototype.includes) {
+        String.prototype.replaceAll = function(search, replacement) {
+          var target = this;
+          return target.split(search).join(replacement);
+        };
+      }
+
+    </script>
+    <div id="app"></div>
+  </body>
+</html>

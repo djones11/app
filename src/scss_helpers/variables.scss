@@ -1,0 +1,73 @@
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+
+@mixin fluid-type($min-vw, $max-vw, $min-font-size, $max-font-size) {
+  $u1: unit($min-vw);
+  $u2: unit($max-vw);
+  $u3: unit($min-font-size);
+  $u4: unit($max-font-size);
+
+  @if $u1 == $u2 and $u1 == $u3 and $u1 == $u4 {
+    & {
+
+      font-size: $min-font-size;
+      @media screen and (min-width: $min-vw) {
+        font-size: calc(#{$min-font-size} + #{strip-unit($max-font-size - $min-font-size)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+      }
+
+      @media screen and (min-width: $max-vw) {
+        font-size: $max-font-size;
+      }
+    }
+  }
+}
+
+@function pow($number, $exponent) {
+  $value: 1;
+
+  @if $exponent > 0 {
+    @for $i from 1 through $exponent {
+      $value: $value * $number;
+    }
+  }
+
+  @return $value;
+}
+
+$yellow: #ffe272;
+$gold: #ffd25c;
+$light_orange: #f5ae43;
+$orange: #ff8840;
+
+$pale_blue: #f2f2f2;
+$very_light_blue: #e5e9f1;
+$light_blue: #c5d0de;
+$medium_blue: #889bad;
+$blue: #6ca5d8;
+$dark_blue: #5f6d7a;
+$very_dark_blue: #44515b;
+
+$bright_green: #10e65e;
+$light_green: #66cfc3;
+$green: #55ca67;
+
+$light_red: #f75077;
+$red: #eb7166;
+$dark_red: #cf234d;
+
+$off_white: #fbfbfb;
+$very_light_grey: #f3f2f2;
+$light_grey: #e4e4e4;
+$grey: #cccccc;
+$black: #232323;
+
+$internal_knowledge: #c9249e;
+
+$chat_head_active: #8796a5;
+$chat_head_inactive: $light_blue;
+
+$light_text_colour: $light_grey;
+$normal_text_colour: $dark_blue;
+
+$login_padding: 5px 5% 10px 5%;
