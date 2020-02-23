@@ -42,12 +42,9 @@ export default {
       ) {
         config["data"] = payload["body"];
       } else {
-        let body = qs.stringify(payload["body"]);
+        let body = payload["body"];
 
         if (method == "PUT" && !body) {
-          config["headers"] = {
-            "Content-Type": "application/json"
-          };
           config["data"] = payload["body"];
         } else {
           config["data"] = body;
@@ -56,7 +53,7 @@ export default {
     }
 
     return new Promise((resolve, reject) => {
-      if (window.navigator["onLine"]) {      
+      if (window.navigator["onLine"]) {
         axios(config)
           .then(response => {
             resolve(response);
@@ -67,7 +64,7 @@ export default {
             error["request"] = payload;
             context.dispatch("handleError", error);
             reject(error);
-          })
+          });
       }
     });
   }

@@ -5,9 +5,7 @@
     <div class="upper_main_container">
       <div class="login_logo">
         <transition name="move-down">
-          <img
-            :src="defaultImage"
-          />
+          <img :src="defaultImage" />
         </transition>
       </div>
       <div :class="`message_container ${alertMessage['type']}`">
@@ -19,7 +17,6 @@
 </template>
 
 <script>
-
 import defaultImage from "@/images/synthetix_logo.png";
 
 export default {
@@ -31,7 +28,7 @@ export default {
         type: "alert"
       },
       defaultImage
-    }
+    };
   },
   methods: {
     updateAlert({ value = "", type = "alert" }) {
@@ -39,8 +36,7 @@ export default {
       this.alertMessage["type"] = type;
     }
   }
-}
-
+};
 </script>
 
 <style scoped lang="scss">

@@ -4,7 +4,8 @@
     :style="{
       'background-color':
         (userData && userData['initiator'] == 'syn') ||
-        (user['avatar'] || (userData && userData['initiator'] == 'syn'))
+        user['avatar'] ||
+        (userData && userData['initiator'] == 'syn')
           ? 'inherit'
           : avatarColourArray[userId % avatarColourArray.length]
     }"

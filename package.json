@@ -21,6 +21,7 @@
     "deep-diff": "^1.0.2",
     "qs": "^6.8.0",
     "vue-mq": "^1.0.1",
+    "vue-click-outside": "^1.0.7",
     "vue-nprogress": "^0.1.5"
   },
   "devDependencies": {

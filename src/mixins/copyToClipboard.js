@@ -9,7 +9,8 @@ export default {
       if (!document.queryCommandSupported(str)) {
         this.ADD_NOTIFICATION({
           title: "Feature not supported",
-          message: "Copy to clipboard functionality doesn't work with the current version of your browser. Browser support: Chrome 42+, Firefox 42+, internet Explorer 10+,  Opera 29+, and  Safari 10+"
+          message:
+            "Copy to clipboard functionality doesn't work with the current version of your browser. Browser support: Chrome 42+, Firefox 42+, internet Explorer 10+,  Opera 29+, and  Safari 10+"
         });
 
         return false;

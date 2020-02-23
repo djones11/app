@@ -7,7 +7,6 @@
 </template>
 
 <style lang="scss">
-
 body,
 html,
 #app {
@@ -841,4 +840,3 @@ ___  ___      _     _ _
   }
 }
 </style>
-

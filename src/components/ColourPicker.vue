@@ -104,9 +104,7 @@ export default {
       if (color.rgba.a == 1) {
         this.colorValue = color.hex;
       } else {
-        this.colorValue = `rgba('${color["rgba"]["r"]}, ${
-          color["rgba"]["g"]
-        }, ${color["rgba"]["b"]}, ${color["rgba"]["a"]})`;
+        this.colorValue = `rgba('${color["rgba"]["r"]}, ${color["rgba"]["g"]}, ${color["rgba"]["b"]}, ${color["rgba"]["a"]})`;
       }
     },
     documentClick(e) {

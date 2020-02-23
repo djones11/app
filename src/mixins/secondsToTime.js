@@ -76,11 +76,7 @@ export default {
               ? (hours += " sec")
               : (hours += " sec");
           formatDays =
-            days == 0
-              ? ""
-              : days == 1
-              ? (days += " day")
-              : (days += " days");
+            days == 0 ? "" : days == 1 ? (days += " day") : (days += " days");
         } else {
           formatSeconds = Math.floor((seconds % 3600) % 60).padLeft();
           formatMinutes = Math.abs(Math.floor((seconds % 3600) / 60)).padLeft();
@@ -108,9 +104,7 @@ export default {
         }
 
         if (!returnedTime) {
-          returnedTime = `0 ${
-            options["text"] ? " secs" : ""
-          }`;
+          returnedTime = `0 ${options["text"] ? " secs" : ""}`;
         }
       } else {
         returnedTime = options["format"]

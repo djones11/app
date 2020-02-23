@@ -1,6 +1,5 @@
 <template>
   <div class="login_wrapper">
-
     <!-- Brand container -->
 
     <div v-show="state < 3">
@@ -147,7 +146,7 @@
           />
         </div>
       </Navigation>
-    </div>    
+    </div>
   </div>
 </template>
 
@@ -310,7 +309,8 @@ export default {
 
       if (response["initialize"] == true) {
         this.emitAlert({
-          value: "This is your first time logging in. Please create a new password for your account.",
+          value:
+            "This is your first time logging in. Please create a new password for your account.",
           type: "info"
         });
       }
@@ -345,9 +345,7 @@ export default {
       this.mfaSecret = response["mfa"];
       this.state = 3;
     },
-    handleError() {
-
-    },
+    handleError() {},
     submitCredentials() {
       let credentials = {
         body: {
@@ -412,7 +410,8 @@ export default {
                     // Resend MFA
 
                     this.emitAlert({
-                      value: "A new MFA code has been sent to your email address.",
+                      value:
+                        "A new MFA code has been sent to your email address.",
                       type: "info"
                     });
                   }
@@ -422,7 +421,8 @@ export default {
 
                 case 4:
                   this.emitAlert({
-                    value: "Your 2FA has been successfully setup. Please enter your code below.",
+                    value:
+                      "Your 2FA has been successfully setup. Please enter your code below.",
                     type: "success"
                   });
                   this.state = 2;

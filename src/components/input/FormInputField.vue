@@ -61,9 +61,7 @@
         :id="$vnode.key ? $vnode.key : msg"
         v-model="outputFunction"
         :maxlength="remaining ? remaining : null"
-        @click="
-          $event.stopPropagation();
-        "
+        @click="$event.stopPropagation()"
         @keypress="$emit('keypress', $event)"
         @keyup="$emit('keyup', $event)"
         :placeholder="computedPlaceholder"
@@ -77,9 +75,7 @@
         v-model="outputFunction"
         v-autosize
         :maxlength="remaining ? remaining : null"
-        @click="
-          $event.stopPropagation();
-        "
+        @click="$event.stopPropagation()"
         @focus="handleFocus($event)"
         @keypress="$emit('keypress', $event)"
         @keyup="$emit('keyup', $event)"
@@ -126,11 +122,7 @@
       <!-- Buttons -->
 
       <span
-        :title="
-          sendIcon['type'] == 'submit'
-            ? 'Submit'
-            : ''
-        "
+        :title="sendIcon['type'] == 'submit' ? 'Submit' : ''"
         v-if="
           (sendIcon['type'] == 'submit' && newOutput) ||
             (sendIcon['type'] == 'search' && !newOutput)

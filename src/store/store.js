@@ -8,11 +8,12 @@ import actions from "./actions.js";
 import getters from "./getters.js";
 
 import Login from "./Login/store";
+import Common from "./Common/store";
 
 Vue.use(Vuex);
 
 axiosRetry(axios, {
-  retries: 3,
+  retries: 0,
   retryDelay: () => {
     return 1000;
   },
@@ -21,11 +22,13 @@ axiosRetry(axios, {
   }
 });
 
-axios.defaults.baseURL = "https://egqg04x5sa.execute-api.eu-west-2.amazonaws.com/dev";
+axios.defaults.baseURL =
+  "https://egqg04x5sa.execute-api.eu-west-2.amazonaws.com/dev";
 
 export default new Vuex.Store({
   modules: {
-    Login
+    Login,
+    Common
   },
   state: state,
   mutations: mutations,

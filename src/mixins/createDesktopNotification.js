@@ -22,7 +22,7 @@ export default {
         notification.onclick = event => {
           let data = event.target["data"];
           window.focus();
-console.log(this.$router);
+          console.log(this.$router);
           if (data["page"] && data["page"] != this.$route["name"]) {
             this.$router.push({
               name: data["page"]

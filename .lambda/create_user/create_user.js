@@ -1,97 +1,102 @@
 const mysql = require('mysql'),
-  AWS   = require('aws-sdk'),
+  AWS = require('aws-sdk'),
   region = process.env.AWS_REGION,
   secretName = process.env.RDS_SECRET_NAME;
-  
+
 let secret, decodedBinarySecret;
+let pool;
 
 const client = new AWS.SecretsManager({
-    region: region
+  region: region
 });
 
-const database = {
-  open: () => {
-    const params = {
-      host: process.env.HOST,
-      user: process.env.USER,
-      password: process.env.PASS,
-      database: process.env.TABL,
-      multipleStatements: true,
-      port: 3306,
-    };
+const checkUsername = (username) => {
+  let sql = `
+    SELECT COUNT(*) AS "users"
+    FROM users 
+    WHERE username = ?
+  `;
 
-    return new Promise((resolve, reject) => {
-      database.connection = mysql.createConnection(params);
+  return new Promise((_resolve, _reject) => 
+    pool.getConnection((err, connection) => {
+      if (err) _reject(err);
 
-      console.log('Creating connection with database');
+      connection.query(sql, [username], (error, results, fields) => {
+        connection.release();
+        if (error) _reject(error);
 
-      database.connection.connect((err) => {
-        if (err) {
-          console.log('Connection with database failed', err.stack);
-
-          reject(err.stack);
-          return;
-        }
-
-        console.log('Connection with database was successful');
-
-        resolve(database.connection);
+        _resolve(results["users"] == 0);
       });
-    });
-  },
-  close: (connection) => {
-    return new Promise((resolve, reject) => {
-      console.log('Terminating connection with database');
+    })
+  );
+}
 
-      connection.end((err) => {
-        if (err) {
-          console.log(
-            'Failed to terminate connection with database',
-            err.stack
-          );
+const createNewUser = (username, password) => {
+  let sql = `
+    INSERT INTO users
+      (username, password)
+    VALUES
+      (?, PASSWORD(?))
+  `;
 
-          reject(err.stack);
-          return;
-        }
+  return new Promise((_resolve, _reject) => 
+    pool.getConnection((err, connection) => {
+      if (err) _reject(err);
 
-        console.log('Connection with database is terminated');
-        resolve('Connection with database is terminated');
+      connection.query(sql, [username, password], (error, results, fields) => {
+        connection.release();
+        if (error) _reject(error);
+
+        _resolve({
+          status: "success",
+          id: results.insertId
+        });
       });
-    });
-  }
-};
+    })
+  );
+}
 
-const create = () => {
-  console.log(process);
-  console.log(secretName)
-  client.getSecretValue({SecretId: secretName}, (err, data) => {
-    if (err) {
-        console.log(err);
-        if (err.code === 'DecryptionFailureException')
-            throw err;
-        else if (err.code === 'InternalServiceErrorException')
-            throw err;
-        else if (err.code === 'InvalidParameterException')
-            throw err;
-        else if (err.code === 'InvalidRequestException')
-            throw err;
-        else if (err.code === 'ResourceNotFoundException')
-            throw err;
-    }
-    else {
-      console.log(data)
+const create = (username, password) => {
+
+  // Get RDS access credentials
+
+  return new Promise((resolve, reject) => 
+    client.getSecretValue({ SecretId: secretName }, async (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
         if ('SecretString' in data) {
-            secret = data.SecretString;
+          secret = data.SecretString;
         } else {
-            let buff = new Buffer(data.SecretBinary, 'base64');
-            decodedBinarySecret = buff.toString('ascii');
+          let buff = new Buffer(data.SecretBinary, 'base64');
+          decodedBinarySecret = buff.toString('ascii');
         }
-    }
-  
-    console.log(client);
-    console.log(secret);
-    console.log(decodedBinarySecret);
-  });
+      }
+
+      let jsonSecret = secret 
+        ? JSON.parse(secret)
+        : JSON.parse(decodedBinarySecret)
+
+      // Establish connection to RDS
+
+      pool = mysql.createPool({
+        host: process.env.HOST,
+        user: jsonSecret["username"],
+        password: jsonSecret["password"],
+        database: process.env.TABLE
+      });
+
+      // Check if username is taken
+
+      if(await checkUsername(username)) {
+        resolve(await createNewUser(username, password));        
+      } else {
+        resolve({
+          status: "taken"
+        })
+      }
+    })
+  )
 }
 
 module.exports = {

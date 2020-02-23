@@ -54,11 +54,8 @@ export default {
     submitPassword(callback) {
       let credentials = {
         body: {
-          passwd: {
-            username: this.username,
-            new: this.newUser,
-            confirm: this.confirmPassword
-          }
+          username: this.username,
+          password: this.newPassword
         },
         method: "PUT",
         url: "login",

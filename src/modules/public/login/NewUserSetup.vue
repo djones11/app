@@ -100,9 +100,15 @@ export default {
   },
   computed: {
     showForward() {
-      if (this.state == 6) {
+      console.log(this.state);
+      if (this.state == 6 || this.state == 5) {
         return this.passwordValidator["passed"] == true;
       } else {
+        console.log(
+          this.newPassword,
+          this.confirmPassword,
+          this.newPassword === this.confirmPassword
+        );
         return (
           (Boolean(this.newPassword && this.confirmPassword) &&
             this.newPassword === this.confirmPassword) == true
@@ -112,8 +118,11 @@ export default {
   },
   methods: {
     checkKeyup(e) {
-      if (e.keyCode == 13 && (this.state == 5 || (this.state > 5 && this.showForward))) {
-        this.goForward();  
+      if (
+        e.keyCode == 13 &&
+        (this.state == 5 || (this.state > 5 && this.showForward))
+      ) {
+        this.goForward();
       }
     },
     goBack() {
@@ -121,9 +130,9 @@ export default {
       this.$emit("updateState", 1);
     },
     goForward() {
-      console.log(this.state)
+      console.log(this.state);
       if (this.state != 7) {
-        this.$emit("updateState", this.state + 1);
+        this.$emit("updateState", 7);
       } else {
         this.submitPassword({
           success: response => {
@@ -135,7 +144,8 @@ export default {
             } else {
               this.$emit("updateState", 1);
               this.$emit("updateAlert", {
-                value: "Your user has been successfully set up. You may now log in with your new details.",
+                value:
+                  "Your user has been successfully set up. You may now log in with your new details.",
                 type: "success"
               });
             }

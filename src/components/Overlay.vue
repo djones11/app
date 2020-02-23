@@ -62,7 +62,7 @@ export default {
     top: 24px;
     font-size: 28px;
   }
-  
+
   &.center .overlay_inner_container {
     text-align: center;
   }

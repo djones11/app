@@ -18,8 +18,7 @@
       class="syn_link_button go_back"
       @click="$emit('goBack', $event)"
     >
-      <span class="icon icon-chevron-left2"></span
-      >Back
+      <span class="icon icon-chevron-left2"></span>Back
     </button>
   </div>
 </template>
