@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'  
+Transform: 'AWS::Serverless-2016-10-31'  
+Description: Deploy lambdas
+Resources:  
+  createUser:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: create_user
+      Handler: index.handler,
+      CodeUri: ./create_user
+      Runtime: nodejs12.x
+      Description: Lambda - Create user
+      MemorySize: 128
+      Timeout: 3
+      Role: >-
+        arn:aws:iam::447031951242:role/service-role/create_user-role-oibvml27
