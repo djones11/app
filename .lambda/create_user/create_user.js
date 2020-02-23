@@ -1,37 +1,54 @@
 const mysql = require('mysql'),
   AWS = require('aws-sdk'),
-  region = process.env.AWS_REGION,
-  secretName = process.env.RDS_SECRET_NAME;
+  region = process.env.AWS_REGION;
 
 let secret, decodedBinarySecret;
 let pool;
 
+const parameterStore = new AWS.SSM();
 const client = new AWS.SecretsManager({
   region: region
 });
 
-const checkUsername = (username) => {
+const getParam = param => {
+  return new Promise((res, rej) => {
+    parameterStore.getParameter({
+      Name: param
+    }, (err, data) => {
+        if (err) return rej(err);
+        return res(data["Parameter"]["Value"])
+    })
+  })
+}
+
+const makeQuery = (sql, params) => {
+  return new Promise((resolve, reject) => 
+    pool.getConnection((err, connection) => {
+      if (err) reject(err);
+
+      connection.query(sql, params, (error, results) => {
+        connection.release();
+        if (error) reject(error);
+
+        resolve(results);
+      });
+    })
+  );
+}
+
+const checkUsername = async (username) => {
   let sql = `
     SELECT COUNT(*) AS "users"
     FROM users 
     WHERE username = ?
   `;
 
-  return new Promise((_resolve, _reject) => 
-    pool.getConnection((err, connection) => {
-      if (err) _reject(err);
+  let results = await makeQuery(sql, [username]);
 
-      connection.query(sql, [username], (error, results, fields) => {
-        connection.release();
-        if (error) _reject(error);
-
-        _resolve(results["users"] == 0);
-      });
-    })
-  );
+  return results[0]["users"] == 0
 }
 
-const createNewUser = (username, password) => {
+const createNewUser = async (username, password) => {
   let sql = `
     INSERT INTO users
       (username, password)
@@ -39,24 +56,19 @@ const createNewUser = (username, password) => {
       (?, PASSWORD(?))
   `;
 
-  return new Promise((_resolve, _reject) => 
-    pool.getConnection((err, connection) => {
-      if (err) _reject(err);
+  let results = await makeQuery(sql, [username, password]);
 
-      connection.query(sql, [username, password], (error, results, fields) => {
-        connection.release();
-        if (error) _reject(error);
-
-        _resolve({
-          status: "success",
-          id: results.insertId
-        });
-      });
-    })
-  );
+  return results.insertId
+    ? {
+        status: "success",
+      }
+    : {
+        status: "failed"
+      }
 }
 
-const create = (username, password) => {
+const create = async (username, password) => {  
+  let secretName = await getParam("rds_access_key_name");
 
   // Get RDS access credentials
 
@@ -80,19 +92,23 @@ const create = (username, password) => {
       // Establish connection to RDS
 
       pool = mysql.createPool({
-        host: process.env.HOST,
+        host: await getParam("rds_host_name"),
         user: jsonSecret["username"],
         password: jsonSecret["password"],
-        database: process.env.TABLE
+        database: await getParam("rds_table_name")
       });
 
       // Check if username is taken
 
       if(await checkUsername(username)) {
+        console.log(username, password)
+        
         resolve(await createNewUser(username, password));        
       } else {
         resolve({
-          status: "taken"
+          status: "failed",
+          error: 100,
+          description: "USERNAME TAKEN"
         })
       }
     })

@@ -132,7 +132,11 @@ export default {
     goForward() {
       console.log(this.state);
       if (this.state != 7) {
-        this.$emit("updateState", 7);
+        if(this.showForward){
+          this.$emit("updateState", 7);
+        } else {
+          this.$emit("updateState", 6);
+        }
       } else {
         this.submitPassword({
           success: response => {
@@ -150,9 +154,15 @@ export default {
               });
             }
           },
-          fail: () => {
+          fail: err => {
+            err = err["data"];
+
+            let errorMessage = err.hasOwnProperty("error")
+              ? `Error ${err["error"]} - ${err["description"]}`
+              : "Failed to submit password";
+
             this.$emit("updateAlert", {
-              value: "Failed to submit password",
+              value: errorMessage,
               type: "alert"
             });
           }
