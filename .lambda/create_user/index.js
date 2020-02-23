@@ -7,7 +7,7 @@ exports.handler = async (event, context, callback) => {
   let results = await createUser.create(body["username"], body["password"]);
 
   const response = {
-    statusCode: results["status"] == "success" ? 200 : 400,
+    statusCode: results.hasOwnProperty("error") ? 200 : 400,
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
