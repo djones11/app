@@ -135,6 +135,7 @@ export default {
 
 <style scoped lang="scss">
 .upload_container {
+  padding: 0 12px;
   background-color: inherit;
 }
 .file_upload {
@@ -142,7 +143,8 @@ export default {
   display: flex;
   width: 100%;
   height: 300px;
-  padding: 24px 0;
+  padding: 24px;
+  text-align: center;
   justify-content: center;
   align-items: center;
   border: 6px dashed $light_grey;

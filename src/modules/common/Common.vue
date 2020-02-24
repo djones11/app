@@ -3,6 +3,14 @@
 
   <div class="common_content_wrapper">
     <nprogress-container></nprogress-container>
+    <router-link
+      title="Log out"
+      tag="span"
+      :to="{
+        name: 'Login'
+      }"
+      class="hover icon icon-exit2 logout"
+    ></router-link>
     <div class="main_wrapper">
       <div class="navigation_wrapper">
         <TabbedMenu
@@ -83,11 +91,19 @@ export default {
   max-width: 800px;
   width: 100%;
   height: 100%;
+  padding: 0 12px;
   flex: 1;
   color: $light_text_colour;
   background-color: inherit;
 }
 .navigation_wrapper {
   padding-bottom: 48px;
+}
+.logout {
+  position: absolute;
+  right: calc(1vw + 7px);
+  top: calc(1vw + 9px);
+  color: #e4e4e4;
+  font-size: calc(0.5vw + 24px);
 }
 </style>
