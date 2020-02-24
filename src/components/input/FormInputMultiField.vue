@@ -162,7 +162,7 @@ export default {
 
 // Classic theme
 
-.synthetix {
+.classic {
   .form_input {
     width: 100%;
     margin: 0 auto;
@@ -179,7 +179,7 @@ export default {
   }
 }
 
-// Knowledge theme - like synthetix but borderless and has an opacity
+// Knowledge theme - like classic but borderless and has an opacity
 
 .knowledge {
   .form_input {

@@ -345,7 +345,7 @@ input[type="password"] {
 
 // Classic theme
 
-.synthetix {
+.classic {
   .form_input::-webkit-input-placeholder {
     color: #c5d0de;
   }

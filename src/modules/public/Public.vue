@@ -54,6 +54,9 @@ export default {
   width: 100%;
 }
 .login_logo {
+  height: 112px;
+  position: relative;
+  top: -72px;
   will-change: transform;
   font-family: "Open Sans", Verdana, Helvetica, sans-serif;
   color: $light_text_colour;
