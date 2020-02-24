@@ -1,6 +1,6 @@
 // This file holds the base logic for new password components and can be extended with local functionality
 
-import { mapActions, mapGetters } from "vuex";
+import { mapActions } from "vuex";
 
 import FormInputField from "@/components/input/FormInputField.vue";
 import Loader from "@/components/Loader.vue";

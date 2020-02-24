@@ -1,15 +1,9 @@
 import axios from "axios";
-import router from "@/router";
-import localForage from "localforage";
-import Vue from "vue";
-
-const qs = require("qs");
 
 export default {
-  handleError(context, payload) {},
+  handleError() {},
   submitAjax(context, payload) {
     let method = payload["method"] ? payload["method"].toUpperCase() : "POST";
-    let state = context["state"];
 
     let config = {
       method: method,
@@ -65,6 +59,10 @@ export default {
             context.dispatch("handleError", error);
             reject(error);
           });
+
+        for (let property in defaultHeaders) {
+          axios.defaults.headers[property] = defaultHeaders[property];
+        }
       }
     });
   }

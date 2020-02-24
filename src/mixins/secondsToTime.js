@@ -1,5 +1,3 @@
-import { mapGetters } from "vuex";
-
 // Converts seconds to desired format
 // Return 06:14:53 by default
 // Enter 'text' = true option to return words. i.e. 3 hours 2 minutes 56 seconds

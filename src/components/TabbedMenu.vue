@@ -22,7 +22,7 @@
                     formattedActiveItem == makeUgly(item['name'], '')) ||
                     (item['id'] &&
                       formattedActiveItem == makeUgly(item['id'], ''))))
-                  ? getTheme['rightBar-tabColour']
+                  ? '#66cfc3'
                   : 'inherit'
             }"
             :title="item['name']"
@@ -42,9 +42,7 @@
             v-if="!item['view']"
             :style="[
               {
-                color: isActive(index, item)
-                  ? getTheme['rightBar-tabColour']
-                  : 'inherit'
+                color: isActive(index, item) ? '#66cfc3' : 'inherit'
               },
               getActiveStyle(index, item)
             ]"
@@ -54,27 +52,10 @@
               :class="`${item['icon']} icon`"
               :title="mode == 'icons_only' ? item['name'] : ''"
             >
-              <FloatingCount
-                :class="item['prompt']['class']"
-                v-if="item['prompt']"
-                :count="item['prompt']['value']"
-              />
             </span>
             <span v-if="mode != 'icons_only'" class="text">{{
               item["name"]
             }}</span>
-            <ActionBox
-              v-if="item['actionBox']"
-              :class="
-                item['actionBox']['class']
-                  ? item['actionBox']['class']
-                  : 'right'
-              "
-              :key="item['actionBox']['id']"
-              :visibility="item['actionBox']['show']"
-              :config="item['actionBox']['options']"
-              @hide="$emit('hide')"
-            />
           </span>
         </li>
       </ul>
@@ -82,7 +63,7 @@
         v-if="mode == 'tabbed' && this.activeItem >= 0"
         class="moving_bar"
         :style="{
-          'background-color': getTheme['rightBar-tabColour'],
+          'background-color': '#66cfc3',
           width: `${barWidth}%`,
           transform: `translate3d(${barMove}, 0, 0)`
         }"
@@ -122,10 +103,6 @@ export default {
     }
   },
   mixins: [makeUgly],
-  components: {
-    ActionBox: () => import("@/components/ActionBox.vue"),
-    FloatingCount: () => import("@/components/FloatingCount.vue")
-  },
   computed: {
     ...mapGetters(["getTheme"]),
     filteredMenuItems() {

@@ -4,15 +4,17 @@ phases:
   install:
     commands:
       - echo Installing
+      - npm install
   pre_build:
     commands:
-      - cd .lambda
-      - aws cloudformation package --template-file template.yaml --s3-bucket app-dcj-lambda --output-template-file template.yaml  
+      - npm -v
+      - node -v
   build:
     commands:
       - echo Build started on `date`
+      - npm run lint --fix
+      - npm run build
 artifacts:
-  type: zip
   files:
-    - template.yaml
-  
+    - "**/*"
+  base-directory: "dist"

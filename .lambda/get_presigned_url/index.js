@@ -1,11 +1,14 @@
-const createUser = require("./create_user");
+const getPresignedUrl = require("./get_presigned_url");
 
 exports.handler = async (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
   
-  let body = JSON.parse(event["body"])
-  let results = await createUser.create(body["username"], body["password"]);
-
+  let token = event.headers.hasOwnProperty("authorization")
+    ? event.headers["authorization"]
+    : event.headers["Authorization"];
+  let body = JSON.parse(event.body);
+  
+  const results = await getPresignedUrl.create(body["filename"], token);
   const response = {
     statusCode: !results.hasOwnProperty("error") ? 200 : 400,
     headers: {
@@ -13,6 +16,6 @@ exports.handler = async (event, context, callback) => {
     },
     body: JSON.stringify(results)
   };
-
+  
   callback(null, response);
 };

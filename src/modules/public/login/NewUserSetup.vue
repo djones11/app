@@ -52,8 +52,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 import newUserLogic from "./newUserLogic.js";
 
 import Navigation from "./Navigation.vue";
@@ -100,15 +98,9 @@ export default {
   },
   computed: {
     showForward() {
-      console.log(this.state);
       if (this.state == 6 || this.state == 5) {
         return this.passwordValidator["passed"] == true;
       } else {
-        console.log(
-          this.newPassword,
-          this.confirmPassword,
-          this.newPassword === this.confirmPassword
-        );
         return (
           (Boolean(this.newPassword && this.confirmPassword) &&
             this.newPassword === this.confirmPassword) == true
@@ -130,9 +122,8 @@ export default {
       this.$emit("updateState", 1);
     },
     goForward() {
-      console.log(this.state);
       if (this.state != 7) {
-        if(this.showForward){
+        if (this.showForward) {
           this.$emit("updateState", 7);
         } else {
           this.$emit("updateState", 6);
@@ -146,7 +137,7 @@ export default {
                 type: "alert"
               });
             } else {
-              this.$emit("updateState", 1);
+              this.$emit("updateState", 0);
               this.$emit("updateAlert", {
                 value:
                   "Your user has been successfully set up. You may now log in with your new details.",

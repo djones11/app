@@ -85,26 +85,6 @@
             @keyup="checkKeyup($event)"
           />
         </div>
-
-        <!-- MFA submission -->
-
-        <div
-          class="move_container"
-          v-if="state == 2"
-          :style="{ left: state * -100 + '%' }"
-        >
-          <FormInputField
-            tab="-1"
-            msg="MFA"
-            key="mfa"
-            maxlength="6"
-            inputMask="numbers"
-            v-model="mfa"
-            :clear="true"
-            class="login_theme"
-            @keyup="checkKeyup($event)"
-          />
-        </div>
       </form>
 
       <!-- Login navigation button -->
@@ -129,19 +109,10 @@
             <span>Capslock on</span>
           </div>
         </div>
-        <div
-          class="under_container resend_mfa"
-          v-show="state == 2 && mfaMethod == 'email'"
-        >
-          <div class="under_subcontainer syn_link_button" @click="resendCode()">
-            <span class="icon icon-envelope2"></span>
-            <span>Resend MFA</span>
-          </div>
-        </div>
         <div class="new_user_container">
           <SynButton
             class="no_background"
-            @click="goTonewUserSetup"
+            @click="goToNewUserSetup"
             buttonText="Sign up here"
           />
         </div>
@@ -151,7 +122,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations, mapGetters } from "vuex";
+import { mapActions, mapState, mapMutations } from "vuex";
 
 import localForage from "localforage";
 
@@ -161,12 +132,6 @@ import FormInputField from "@/components/input/FormInputField.vue";
 import SynButton from "@/components/input/SynButton.vue";
 import Loader from "@/components/Loader.vue";
 
-const MfaSetup = () => ({
-  component: import("./MfaSetup.vue"),
-  loading: Loader,
-  delay: 0
-});
-
 const NewUserSetup = () => ({
   component: import("./NewUserSetup.vue"),
   loading: Loader,
@@ -175,15 +140,9 @@ const NewUserSetup = () => ({
 
 const defaultData = {
   state: 0,
-  imagesLoaded: {
-    avatar: false
-  },
   loading: false,
   username: "",
   password: "",
-  mfa: "",
-  mfaType: "",
-  mfaSecret: {},
   stateXref: {
     0: "username",
     1: "password",
@@ -207,7 +166,6 @@ export default {
   components: {
     FormInputField,
     Navigation,
-    MfaSetup,
     NewUserSetup,
     SynButton
   },
@@ -226,24 +184,25 @@ export default {
     clearInterval(this.focusCheckTimeout);
   },
   computed: {
-    ...mapState([
-      "deviceInformation",
-      "clientInformation",
-      "userInformation",
-      "lastModXref",
-      "clientIdentified"
-    ])
+    ...mapState(["userInformation"])
   },
   methods: {
     ...mapActions(["submitAjax"]),
-    ...mapMutations([
-      "UPDATE_USER_INFORMATION",
-      "REMOVE_GLOBAL_INTERVAL",
-      "UPDATE_FULLPAGE_LOADER"
-    ]),
-    resendCode() {
-      this.mfa = "";
-      this.submitCredentials();
+    ...mapMutations(["UPDATE_USER_INFORMATION"]),
+    goToNewUserSetup(response) {
+      this.UPDATE_USER_INFORMATION({
+        token: response["token"]
+      });
+
+      this.state = 5;
+
+      if (response["initialize"] == true) {
+        this.emitAlert({
+          value:
+            "This is your first time logging in. Please create a new password for your account.",
+          type: "info"
+        });
+      }
     },
     updateState(value) {
       this.state = value;
@@ -294,32 +253,15 @@ export default {
         }
       }
     },
-    updateType(value) {
-      this.mfaType = value;
-    },
     emitAlert(payload) {
       this.$emit("alert", payload);
-    },
-    goTonewUserSetup(response) {
-      this.UPDATE_USER_INFORMATION({
-        token: response["token"]
-      });
-
-      this.state = 5;
-
-      if (response["initialize"] == true) {
-        this.emitAlert({
-          value:
-            "This is your first time logging in. Please create a new password for your account.",
-          type: "info"
-        });
-      }
     },
     logInUser(response) {
       this.loading = true;
 
       this.UPDATE_USER_INFORMATION({
-        token: response["token"]
+        token: response["token"],
+        username: this.username
       });
 
       localForage.getItem("token", () => {
@@ -329,30 +271,18 @@ export default {
         ) {
           this.$router.push(this.$route.params.nextUrl);
         } else {
-          let redirectPage = !response["last_module"]
-            ? this.lastModXref[1]
-            : this.lastModXref[response["last_module"]];
-
           this.$router.push({
-            name: redirectPage
+            name: "Photos"
           });
         }
       });
-    },
-    goToMfaSetup(response) {
-      this.emitAlert({});
-
-      this.mfaSecret = response["mfa"];
-      this.state = 3;
     },
     handleError() {},
     submitCredentials() {
       let credentials = {
         body: {
           username: this.username,
-          password: this.password,
-          mfa: this.mfa ? this.mfa : undefined,
-          method: this.mfaType ? this.mfaType : undefined
+          password: this.password
         },
         url: "login",
         error: "Login request failed"
@@ -367,72 +297,11 @@ export default {
 
           // Credentials recognised
 
-          if (response["authorised"]) {
-            this.mfaMethod = response["mfa"]["method"];
-
-            if (response["mfa"]["initialize"] === true) {
-              if (response["password_expired"] == true) {
-                this.goTonewUserSetup(response);
-              } else {
-                this.goToMfaSetup(response);
-              }
-
-              // Password has expired MFA has already been set up
-            } else if (
-              response["password_expired"] == true &&
-              response["mfa"]["authorised"] === true
-            ) {
-              this.goTonewUserSetup(response);
-
-              // Login successful
-            } else if (response["mfa"]["authorised"]) {
-              this.logInUser(response);
-            } else {
-              switch (this.state) {
-                // Input MFA
-
-                case 1:
-                  this.emitAlert({
-                    value: "Please enter your MFA code below",
-                    type: "info"
-                  });
-                  this.state = 2;
-                  break;
-
-                case 2:
-                  // Incorrect MFA
-
-                  if (this.mfa) {
-                    this.emitAlert({
-                      value: "Incorrect 2FA code, please try again."
-                    });
-                  } else {
-                    // Resend MFA
-
-                    this.emitAlert({
-                      value:
-                        "A new MFA code has been sent to your email address.",
-                      type: "info"
-                    });
-                  }
-                  break;
-
-                // Submit MFA type
-
-                case 4:
-                  this.emitAlert({
-                    value:
-                      "Your 2FA has been successfully setup. Please enter your code below.",
-                    type: "success"
-                  });
-                  this.state = 2;
-                  break;
-              }
-            }
+          if (response["status"] == "success") {
+            this.logInUser(response);
           } else {
             // Incorrect login details
 
-            this.resetState(true);
             this.emitAlert({
               value: "Your login details are incorrect. Please try again"
             });
@@ -440,7 +309,6 @@ export default {
         })
         .catch(error => {
           this.loading = false;
-          this.resetState(true);
           this.handleError(error);
 
           console.warn(error);

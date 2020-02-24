@@ -1,11 +1,20 @@
-const mysql = require('mysql'),
-  AWS = require('aws-sdk'),
-  parameterStore = new AWS.SSM(),
-  secretsClient = new AWS.SecretsManager({
-    region: process.env.AWS_REGION
-  });
+const mysql = require("mysql"),
+  JWT = require("jsonwebtoken"),
+  AWS = require("aws-sdk"),
+  Redis = require("ioredis"),
+  region = process.env.AWS_REGION;
 
 let pool;
+
+const cache = new Redis({
+  port: "6379",
+  host: "cache-redis-001.qchuzv.0001.euw2.cache.amazonaws.com",
+  db: 0
+});
+const parameterStore = new AWS.SSM();
+const client = new AWS.SecretsManager({
+  region: region
+});
 
 const getParam = param => {
   return new Promise((res, rej) => {
@@ -33,40 +42,21 @@ const makeQuery = (sql, params) => {
   );
 }
 
-const checkUsername = async (username) => {
+const checkCredentials = async (username, password) => {
   let sql = `
-    SELECT COUNT(*) AS "users"
+    SELECT pk_id AS 'id'
     FROM users 
-    WHERE username = ?
-  `;
-
-  let results = await makeQuery(sql, [username]);
-
-  return results[0]["users"] == 0
-}
-
-const createNewUser = async (username, password) => {
-  let sql = `
-    INSERT INTO users
-      (username, password)
-    VALUES
-      (?, PASSWORD(?))
+    WHERE username = ? AND password = PASSWORD(?)
   `;
 
   let results = await makeQuery(sql, [username, password]);
 
-  return results.insertId
-    ? {
-      status: "success",
-    }
-    : {
-      status: "failed"
-    }
+  return results.length > 0 && results[0]["id"]
 }
 
 const getSecret = (secretId) => {
   return new Promise((resolve, reject) =>
-    secretsClient.getSecretValue({ SecretId: secretId }, (err, data) => {
+    client.getSecretValue({ SecretId: secretId }, (err, data) => {
       let secret, decodedBinarySecret;
 
       if (err) {
@@ -87,12 +77,12 @@ const getSecret = (secretId) => {
   );
 }
 
-const create = (username, password) => {
+const auth = async (username, password) => {
 
   // Get RDS access credentials
 
   return new Promise(async (resolve, reject) => {
-    let jsonSecret = await getSecret("rds_details")
+    let jsonSecret = await getSecret("rds_details");
 
     // Establish connection to RDS
 
@@ -103,20 +93,30 @@ const create = (username, password) => {
       database: await getParam("rds_table_name")
     });
 
-    // Check if username is taken
+    // Check if credentials match
 
-    if (await checkUsername(username)) {
-      resolve(await createNewUser(username, password));
-    } else {
+    let userId = await checkCredentials(username, password)
+
+    if (userId) {
+      let jwtSecret = await getSecret("jwt_secret");
+
+      // Create session and add to cache
+
+      let token = JWT.sign({
+        exp: Math.floor(Date.now() / 1000) + (60 * 60),
+        userId
+      }, jwtSecret["secret"]);
+
+      await cache.set(userId, token, "EX", 60);
+
       resolve({
-        status: "failed",
-        error: 100,
-        description: "USERNAME TAKEN"
+        status: "success",
+        token
       })
     }
   });
 }
 
 module.exports = {
-  create
+  auth
 }

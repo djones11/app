@@ -6,6 +6,28 @@
   </div>
 </template>
 
+<script>
+import { mapMutations } from "vuex";
+
+import localForage from "localforage";
+
+export default {
+  data: function() {
+    return {};
+  },
+  created() {
+    localForage.getItem("token", (err, value) => {
+      if (value) {
+        this.UPDATE_USER_INFORMATION({ token: value });
+      }
+    });
+  },
+  methods: {
+    ...mapMutations(["UPDATE_USER_INFORMATION"])
+  }
+};
+</script>
+
 <style lang="scss">
 body,
 html,
@@ -68,6 +90,7 @@ img {
   max-height: 100%;
   height: auto;
   user-select: none;
+  object-fit: contain;
 }
 h1 {
   font-size: 2.2em;

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import defaultImage from "@/images/synthetix_logo.png";
+import defaultImage from "@/images/logo.png";
 
 export default {
   name: "Public",

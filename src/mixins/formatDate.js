@@ -1,5 +1,3 @@
-import { mapGetters } from "vuex";
-
 function getDayOfWeek(date, short) {
   if (date && date != "Invalid Date") {
     var weekdays = new Array(7);
