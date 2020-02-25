@@ -277,7 +277,11 @@ export default {
         }
       });
     },
-    handleError() {},
+    handleError() {
+      this.emitAlert({
+        value: "Your login details are incorrect. Please try again"
+      });
+    },
     submitCredentials() {
       let credentials = {
         body: {
