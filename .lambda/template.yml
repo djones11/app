@@ -9,6 +9,7 @@ Resources:
       Handler: index.handler,
       CodeUri: ./create_user
       Runtime: nodejs12.x
+      AutoPublishAlias: live
       Description: Lambda - Create user
       MemorySize: 128
       Timeout: 3
