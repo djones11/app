@@ -1,6 +1,10 @@
 <template>
   <div class="photos_container">
-    <div class="photo_item" v-for="(photo, index) in photos" :key="photo['id'] + index">
+    <div
+      class="photo_item"
+      v-for="(photo, index) in photos"
+      :key="photo['id'] + index"
+    >
       <a target="_blank" :href="photo['location']">
         <img :src="photo['location']" />
       </a>
@@ -57,7 +61,7 @@ export default {
                     Description: "Token expired"
                   }
                 }
-              })
+              });
               reject(error);
             });
         })

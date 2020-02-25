@@ -109,9 +109,9 @@ export default {
             this.successTimeout = setTimeout(() => {
               this.showSuccess = false;
             }, 8000);
-          })
-        })  
-        .catch(error => {
+          });
+        })
+        .catch(() => {
           this.$router.push({
             name: "Login",
             params: {
@@ -120,7 +120,7 @@ export default {
                 Description: "Token expired"
               }
             }
-          })
+          });
         });
     },
     handleFileUpload(source) {
