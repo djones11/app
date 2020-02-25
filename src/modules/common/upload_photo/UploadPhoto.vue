@@ -26,7 +26,7 @@
         Your image has been successfully uploaded and will soon appear in "My
         photos"
       </h4>
-      <SynButton
+      <CustomButton
         v-if="files.length > 0"
         buttonText="Upload photo"
         @click="uploadPhoto"
@@ -41,7 +41,7 @@ import { mapActions } from "vuex";
 
 import handleUpload from "@/mixins/handleUpload.js";
 
-import SynButton from "@/components/input/SynButton";
+import CustomButton from "@/components/input/CustomButton";
 import Loader from "@/components/Loader";
 
 export default {
@@ -56,7 +56,7 @@ export default {
     };
   },
   mixins: [handleUpload],
-  components: { SynButton, Loader },
+  components: { CustomButton, Loader },
   methods: {
     ...mapActions(["submitAjax"]),
     uploadPhoto() {

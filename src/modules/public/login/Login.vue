@@ -110,7 +110,7 @@
           </div>
         </div>
         <div class="new_user_container">
-          <SynButton
+          <CustomButton
             class="no_background"
             @click="goToNewUserSetup"
             buttonText="Sign up here"
@@ -129,7 +129,7 @@ import localForage from "localforage";
 import Navigation from "./Navigation.vue";
 
 import FormInputField from "@/components/input/FormInputField.vue";
-import SynButton from "@/components/input/SynButton.vue";
+import CustomButton from "@/components/input/CustomButton.vue";
 import Loader from "@/components/Loader.vue";
 
 const NewUserSetup = () => ({
@@ -167,7 +167,7 @@ export default {
     FormInputField,
     Navigation,
     NewUserSetup,
-    SynButton
+    CustomButton
   },
   activated() {
     this.resetState();
