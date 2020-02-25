@@ -19,7 +19,7 @@ Resources:
     1 Dynamodb,
     1 RDS database,
     1 Elasticache layer - Redis,
-    7 Lambda functions
+    6 Lambda functions
         -   Lambdas exist inside the default VPC with a NAT gateway to access public resources
         -   3 Subnets to the default vpc
     2 Secret Manager keys

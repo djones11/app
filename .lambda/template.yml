@@ -15,3 +15,73 @@ Resources:
       Timeout: 3
       Role: >-
         arn:aws:iam::447031951242:role/service-role/create_user-role-oibvml27
+
+  authUser:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: auth_user
+      Handler: index.handler,
+      CodeUri: ./auth_user
+      Runtime: nodejs12.x
+      AutoPublishAlias: live
+      Description: Lambda - Auth user
+      MemorySize: 128
+      Timeout: 3
+      Role: >-
+        arn:aws:iam::447031951242:role/general_lambda_access
+
+  authToken:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: auth_token
+      Handler: index.handler,
+      CodeUri: ./auth_token
+      Runtime: nodejs12.x
+      AutoPublishAlias: live
+      Description: Lambda - Auth token
+      MemorySize: 128
+      Timeout: 3
+      Role: >-
+        arn:aws:iam::447031951242:role/service-role/auth_token-role-wpllxkdi      
+
+  getPresignedUrl:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: get_presigned_url
+      Handler: index.handler,
+      CodeUri: ./get_presigned_url
+      Runtime: nodejs12.x
+      AutoPublishAlias: live
+      Description: Lambda - Create presigned url for uploading images
+      MemorySize: 128
+      Timeout: 3
+      Role: >-
+        arn:aws:iam::447031951242:role/service-role/get_presigned_url-role-tp3oikw7         
+
+  getPhotos:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: get_photos
+      Handler: index.handler,
+      CodeUri: ./get_photos
+      Runtime: nodejs12.x
+      AutoPublishAlias: live
+      Description: Lambda - Get photos
+      MemorySize: 128
+      Timeout: 3
+      Role: >-
+        arn:aws:iam::447031951242:role/service-role/get_photos-role-fkxtxfdq               
+
+  transferPhotos:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: transfer_photos
+      Handler: index.handler,
+      CodeUri: ./transfer_photos
+      Runtime: nodejs12.x
+      AutoPublishAlias: live
+      Description: Lambda - Get photos
+      MemorySize: 128
+      Timeout: 3
+      Role: >-
+        arn:aws:iam::447031951242:role/service-role/callsqs            
