@@ -176,7 +176,7 @@ export default {
     if (this.$route.params["error"]) {
       let error = this.$route.params["error"];
       this.emitAlert({
-        value: `${error["Error"]}: ${error["Description"]}`
+        value: `Error ${error["Error"]}: ${error["Description"]}`
       });
     }
   },

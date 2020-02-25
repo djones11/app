@@ -49,6 +49,15 @@ export default {
               resolve(response);
             })
             .catch(error => {
+              this.$router.push({
+                name: "Login",
+                params: {
+                  error: {
+                    Error: 101,
+                    Description: "Token expired"
+                  }
+                }
+              })
               reject(error);
             });
         })

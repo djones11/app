@@ -52,9 +52,8 @@ export default {
           .then(response => {
             resolve(response);
           })
-          .catch(error => {
-            error = error["response"] ? error["response"] : {};
-
+          .catch(error => {            
+            error = error["response"] ? error["response"] : {}; 
             error["request"] = payload;
             context.dispatch("handleError", error);
             reject(error);

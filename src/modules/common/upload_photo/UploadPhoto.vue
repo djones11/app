@@ -76,40 +76,52 @@ export default {
 
       this.loading = true;
 
-      this.submitAjax(payload).then(response => {
-        response = response["data"];
+      this.submitAjax(payload)
+        .then(response => {
+          response = response["data"];
 
-        this.loading = false;
+          this.loading = false;
 
-        let payload = {
-          body: {},
-          url: response["url"],
-          method: "POST",
-          headers: {
-            Authorization: null
-          }
-        };
+          let payload = {
+            body: {},
+            url: response["url"],
+            method: "POST",
+            headers: {
+              Authorization: null
+            }
+          };
 
-        const formData = new FormData();
+          const formData = new FormData();
 
-        Object.keys(response.fields).forEach(key => {
-          formData.append(key, response.fields[key]);
+          Object.keys(response.fields).forEach(key => {
+            formData.append(key, response.fields[key]);
+          });
+
+          // Actual file has to be appended last.
+          formData.append("file", this.files[0]);
+
+          payload["body"] = formData;
+
+          this.submitAjax(payload).then(() => {
+            this.showSuccess = true;
+            this.files = [];
+
+            this.successTimeout = setTimeout(() => {
+              this.showSuccess = false;
+            }, 8000);
+          })
+        })  
+        .catch(error => {
+          this.$router.push({
+            name: "Login",
+            params: {
+              error: {
+                Error: 101,
+                Description: "Token expired"
+              }
+            }
+          })
         });
-
-        // Actual file has to be appended last.
-        formData.append("file", this.files[0]);
-
-        payload["body"] = formData;
-
-        this.submitAjax(payload).then(() => {
-          this.showSuccess = true;
-          this.files = [];
-
-          this.successTimeout = setTimeout(() => {
-            this.showSuccess = false;
-          }, 8000);
-        });
-      });
     },
     handleFileUpload(source) {
       let files = [];

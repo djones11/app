@@ -12,9 +12,6 @@ Summary:
         -   Sorting/Filtering photos
         -   Improved caching
         -   Better fail case handling
-        -   Log out
-        -   Handling session token expiry
-        -   Token authorization on REST calls
         -   CI/CD for AWS resources (SAM/CloudFormation)
 
 Resources:
@@ -22,7 +19,7 @@ Resources:
     1 Dynamodb,
     1 RDS database,
     1 Elasticache layer - Redis,
-    6 Lambda functions
+    7 Lambda functions
         -   Lambdas exist inside the default VPC with a NAT gateway to access public resources
         -   3 Subnets to the default vpc
     2 Secret Manager keys
@@ -70,7 +67,15 @@ Routes:
             -   Redis to store sessions
         -   API Gateway
 
+    Auth token
+        -   API Gateway calls
+        -   Lambda calls
+            -   RDS database to check available username and to create a new user
+            -   Secret Manager store to get RDS access details
+        -   API Gateway     
+
     Get photos
+        -   Requires auth_token for access
         -   API Gateway calls
         -   Lambda calls
             -   Dynambodb to get photos available to the user
@@ -78,6 +83,7 @@ Routes:
         -   API Gateway
 
     Get presigned url
+        -   Requires auth_token for access
         -   API Gateway calls
         -   Lambda calls
             -   S3 to create a presigned url to allow direct uploading
